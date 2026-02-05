@@ -1,0 +1,37 @@
+## Virtual Environment (The 1000+ files)
+.venv/
+venv/
+ENV/
+bin/
+lib/
+include/
+
+## PyCharm & IDs
+.idea/
+*.iml
+.vscode/
+*.sublime-project
+
+## Data ( Separating data from code)
+data/raw/*.csv
+data/interim/*.csv
+data/processed/*.csv
+data/external/*.csv
+## Note: This ignores the files but keeps the folders if you have a .gitkeep in them
+
+## Models & Artifacts
+models/saved_models/*.pkl
+models/saved_models/*.h5
+models/artifacts/*.pkl
+models/artifacts/*.joblib
+
+## Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ipynb_checkpoints/
+
+## OS Specific
+.DS_Store
+Thumbs.db
