@@ -8,10 +8,9 @@ An end-to-end Machine Learning pipeline designed to detect fraudulent transactio
 - `data/`: Folder for datasets (ignored by Git).
 - `models/`: Saved model artifacts.
 
-##  Dataset
-**Note:** The raw data is not included in this repository due to size. 
-1. Download the dataset from [Kaggle: Credit Card Fraud DataSet](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud).
-2. Place the `creditcard.csv` file into the `data/raw/` directory.
+##  Dataset 
+1. Download the dataset from [Kaggle: credit card fraud dataset](https://www.kaggle.com/datasets/bhadramohit/credit-card-fraud-detection/data).
+2. Place the `credit_card_fraud_dataset.csv` file into the `data/raw/` directory.
 
 ##  Setup
 1. Create a virtual environment: `python -m venv .venv`
