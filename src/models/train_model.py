@@ -1,6 +1,7 @@
 
 import joblib
 import pandas as pd
+import yaml
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, confusion_matrix , recall_score, accuracy_score , root_mean_squared_error
@@ -9,10 +10,20 @@ from pathlib import Path
 # Importing preprocessor class
 from src.data.preprocessing import SimpleFraudPreprocessor
 
-# Paths setup
+## Paths setup
 PROJECT_ROOT = Path(__file__).parent.parent.parent
-DATA_PATH = PROJECT_ROOT / 'data' / 'raw' / 'credit_card_fraud_dataset.csv'
-MODEL_SAVE_PATH = PROJECT_ROOT / 'models' / 'artifacts' / 'fraud_model.pkl'
+
+def load_yaml(file_name):
+    config_path = PROJECT_ROOT / 'configs' / file_name
+    with open(config_path, 'r') as file:
+        return yaml.safe_load(file)
+
+paths_config = load_yaml('config.yaml')
+params_config = load_yaml('model_params.yaml')
+
+## Pulling paths from config.yaml
+DATA_PATH = PROJECT_ROOT / paths_config['paths']['raw_data']
+MODEL_SAVE_PATH = PROJECT_ROOT / paths_config['paths']['model_path']
 
 
 def train_fraud_model():
@@ -38,12 +49,13 @@ def train_fraud_model():
     baseline_rmse = root_mean_squared_error(y_test, baseline_pred)
 
     # Initialising Random Forest
-    # class_weight='balanced' helps the model focus on the rare fraud cases
+
+    rf_params = params_config['model_params']
     model = RandomForestClassifier(
-        n_estimators=100,
-        max_depth=10,
-        class_weight='balanced',
-        random_state=42
+        n_estimators=rf_params['n_estimators'],
+        max_depth=rf_params['max_depth'],
+        random_state=rf_params['random_state'],
+        class_weight= 'balanced'
     )
 
     # Training the model

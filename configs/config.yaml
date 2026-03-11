@@ -1,0 +1,4 @@
+paths:
+  raw_data: "data/raw/credit_card_fraud_dataset.csv"
+  processed_artifacts: "models/artifacts/preprocessing.pkl"
+  model_path: "models/artifacts/fraud_model.pkl"

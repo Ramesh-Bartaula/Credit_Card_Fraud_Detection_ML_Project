@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import yaml
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import RobustScaler, LabelEncoder
 import joblib
@@ -7,7 +8,16 @@ from pathlib import Path
 
 ## Getting project root directory
 PROJECT_ROOT = Path(__file__).parent.parent.parent
-DATA_PATH = PROJECT_ROOT / 'data' / 'raw' / 'credit_card_fraud_dataset.csv'
+
+def load_yaml(file_name):
+    config_path = PROJECT_ROOT / 'configs' / file_name
+    with open(config_path, 'r') as file:
+        return yaml.safe_load(file)
+
+
+## Loading both files
+paths_config = load_yaml('config.yaml')
+params_config = load_yaml('model_params.yaml')
 
 class SimpleFraudPreprocessor:
 
@@ -46,7 +56,7 @@ class SimpleFraudPreprocessor:
         print(f"Created {len(feature_columns)} features")
         return X, y
 
-    def split_data(self, X, y, test_size=0.2):
+    def split_data(self, X, y, test_size=0.3):
         ## splitting data into train and test
 
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42, stratify=y)
@@ -67,7 +77,9 @@ class SimpleFraudPreprocessor:
     def save_preprocessor(self):
         ## Saving all encoders and scaler in one file
 
-        save_path = PROJECT_ROOT / 'models' / 'artifacts' / 'preprocessing.pkl'
+        save_path = PROJECT_ROOT / paths_config['paths']['processed_artifacts']
+
+        save_path.parent.mkdir(parents=True, exist_ok=True)
 
         ## Creating a dictionary to hold everything
         artifacts = {
@@ -79,8 +91,11 @@ class SimpleFraudPreprocessor:
         print(f"Preprocessor saved to {save_path}")
 
 if __name__ == "__main__":
-    ## Loading data
-    print("Loading data...")
+
+    # Pulling raw data path from config.yaml
+    DATA_PATH = PROJECT_ROOT / paths_config['paths']['raw_data']
+
+    print(f"Loading data from {DATA_PATH}...")
     df = pd.read_csv(DATA_PATH)
 
     ## Preprocessing steps
