@@ -1,8 +1,9 @@
 
 import joblib
 import pandas as pd
+from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.metrics import classification_report, confusion_matrix , recall_score, accuracy_score
 from pathlib import Path
 
 # Importing preprocessor class
@@ -15,7 +16,7 @@ MODEL_SAVE_PATH = PROJECT_ROOT / 'models' / 'artifacts' / 'fraud_model.pkl'
 
 
 def train_fraud_model():
-    # 1. Load Data
+    # Loading Data
     print("--- Loading Data ---")
     df = pd.read_csv(DATA_PATH)
 
@@ -25,6 +26,15 @@ def train_fraud_model():
     X, y = prep.prepare_features(df)
     X_train, X_test, y_train, y_test = prep.split_data(X, y)
     X_train_scaled, X_test_scaled = prep.scale_features(X_train, X_test)
+
+
+    #--Baseline Moeling------
+    print("\n---Running Baseline Modek------")
+    baseline = LogisticRegression()
+    baseline.fit(X_train_scaled, y_train)
+    baseline_pred = baseline.predict(X_test_scaled)
+    baseline_recall = recall_score(y_test , baseline_pred)
+    baseline_accuracy = accuracy_score(y_test, baseline_pred)
 
     # Initialising Random Forest
     # class_weight='balanced' helps the model focus on the rare fraud cases
@@ -41,13 +51,27 @@ def train_fraud_model():
 
     # Evaluating
     print("--- Evaluation ---")
-    y_pred = model.predict(X_test_scaled)
+    rf_pred = model.predict(X_test_scaled)
+    rf_accuracy = accuracy_score(y_test, rf_pred)
+    rf_recall = recall_score(y_test, rf_pred)
 
-    # This report shows Precision, Recall, and F1-Score
-    print(classification_report(y_test, y_pred))
 
-    # Saveing the Model and the Preprocessor artifacts
-    print("--- Saving Artifacts ---")
+    ## Comparison between model
+    print("\n" + "="*25)
+    print("       MODEL COMPARISON      ")
+    print("="*25)
+    print(f"Metric     | Baseline Model    | Random Forest Model")
+    print(f"Accuracy     | {baseline_accuracy:.2f} | {rf_accuracy:.2f}")
+    print(f"Recall     | {rf_recall:.2f} | {baseline_recall:.2f}")
+
+
+    ## calculating precision , re-call and f-1 score of rf model
+    print("="*25)
+    print(f"Classification Report  | {classification_report(y_test, rf_pred)}")
+    print(f"Confusion Matrix  | {confusion_matrix(y_test, rf_pred)}")
+
+    # Saving the best Model and the Preprocessor artifacts
+
     prep.save_preprocessor()  # Saves scaler and encoders
     joblib.dump(model, MODEL_SAVE_PATH)
     print(f"Model successfully saved to {MODEL_SAVE_PATH}")
