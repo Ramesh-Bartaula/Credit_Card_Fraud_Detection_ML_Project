@@ -65,7 +65,7 @@ def train_fraud_model():
     print(f"Metric     | Baseline Model  | Random Forest Model")
     print(f"Accuracy   | {baseline_accuracy:.2f}            | {rf_accuracy:.2f}")
     print(f"Recall     | {baseline_recall:.2f}            | {rf_recall:.2f}")
-    print(f"RMSE       |  {baseline_rmse:.2f}                | {rf_rmse:.2f}")
+    print(f"RMSE       | {baseline_rmse:.2f}            | {rf_rmse:.2f}")
 
 
     ## calculating precision , re-call and f-1 score of rf model
