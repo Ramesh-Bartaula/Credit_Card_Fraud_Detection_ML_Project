@@ -3,7 +3,7 @@ import joblib
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import classification_report, confusion_matrix , recall_score, accuracy_score
+from sklearn.metrics import classification_report, confusion_matrix , recall_score, accuracy_score , root_mean_squared_error
 from pathlib import Path
 
 # Importing preprocessor class
@@ -35,6 +35,7 @@ def train_fraud_model():
     baseline_pred = baseline.predict(X_test_scaled)
     baseline_recall = recall_score(y_test , baseline_pred)
     baseline_accuracy = accuracy_score(y_test, baseline_pred)
+    baseline_rmse = root_mean_squared_error(y_test, baseline_pred)
 
     # Initialising Random Forest
     # class_weight='balanced' helps the model focus on the rare fraud cases
@@ -54,6 +55,7 @@ def train_fraud_model():
     rf_pred = model.predict(X_test_scaled)
     rf_accuracy = accuracy_score(y_test, rf_pred)
     rf_recall = recall_score(y_test, rf_pred)
+    rf_rmse = root_mean_squared_error(y_test, rf_pred)
 
 
     ## Comparison between model
@@ -63,6 +65,7 @@ def train_fraud_model():
     print(f"Metric     | Baseline Model  | Random Forest Model")
     print(f"Accuracy   | {baseline_accuracy:.2f}            | {rf_accuracy:.2f}")
     print(f"Recall     | {baseline_recall:.2f}            | {rf_recall:.2f}")
+    print(f"RMSE       |  {baseline_rmse:.2f}                | {rf_rmse:.2f}")
 
 
     ## calculating precision , re-call and f-1 score of rf model
