@@ -13,13 +13,7 @@ include/
 *.sublime-project
 
 
-## Note: This ignores the files but keeps the folders if you have a .gitkeep in them
 
-## Models & Artifacts
-## models/saved_models/*.pkl
-## models/saved_models/*.h5
-## models/artifacts/*.pkl
-## models/artifacts/*.joblib
 
 ## Python Cache
 __pycache__/
