@@ -28,7 +28,7 @@ def train_fraud_model():
     X_train_scaled, X_test_scaled = prep.scale_features(X_train, X_test)
 
 
-    #--Baseline Moeling------
+    #--Baseline Modeling------
     print("\n---Running Baseline Modek------")
     baseline = LogisticRegression()
     baseline.fit(X_train_scaled, y_train)
@@ -62,7 +62,7 @@ def train_fraud_model():
     print("="*25)
     print(f"Metric     | Baseline Model  | Random Forest Model")
     print(f"Accuracy   | {baseline_accuracy:.2f}            | {rf_accuracy:.2f}")
-    print(f"Recall     | {rf_recall:.2f}            | {baseline_recall:.2f}")
+    print(f"Recall     | {baseline_recall:.2f}            | {rf_recall:.2f}")
 
 
     ## calculating precision , re-call and f-1 score of rf model
