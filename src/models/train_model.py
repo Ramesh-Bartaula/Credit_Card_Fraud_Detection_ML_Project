@@ -61,7 +61,7 @@ def train_fraud_model():
     print("       MODEL COMPARISON      ")
     print("="*25)
     print(f"Metric     | Baseline Model  | Random Forest Model")
-    print(f"Accuracy   | {baseline_accuracy:.2f}      | {rf_accuracy:.2f}")
+    print(f"Accuracy   | {baseline_accuracy:.2f}          | {rf_accuracy:.2f}")
     print(f"Recall     | {rf_recall:.2f}            | {baseline_recall:.2f}")
 
 
