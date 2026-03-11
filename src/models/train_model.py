@@ -60,15 +60,17 @@ def train_fraud_model():
     print("\n" + "="*25)
     print("       MODEL COMPARISON      ")
     print("="*25)
-    print(f"Metric     | Baseline Model    | Random Forest Model")
-    print(f"Accuracy     | {baseline_accuracy:.2f} | {rf_accuracy:.2f}")
-    print(f"Recall     | {rf_recall:.2f} | {baseline_recall:.2f}")
+    print(f"Metric     | Baseline Model  | Random Forest Model")
+    print(f"Accuracy   | {baseline_accuracy:.2f}      | {rf_accuracy:.2f}")
+    print(f"Recall     | {rf_recall:.2f}            | {baseline_recall:.2f}")
 
 
     ## calculating precision , re-call and f-1 score of rf model
     print("="*25)
-    print(f"Classification Report  | {classification_report(y_test, rf_pred)}")
-    print(f"Confusion Matrix  | {confusion_matrix(y_test, rf_pred)}")
+    print(f"Classification Report of Random forest model")
+    print(classification_report(y_test, rf_pred))
+    print(f"Confusion Matrix of Random Forest Model")
+    print(confusion_matrix(y_test, rf_pred))
 
     # Saving the best Model and the Preprocessor artifacts
 
