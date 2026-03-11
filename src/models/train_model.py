@@ -1,8 +1,10 @@
 
 import joblib
 import pandas as pd
+from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report, confusion_matrix , accuracy_score , recall_score
 
 from pathlib import Path
 
@@ -26,6 +28,16 @@ def train_fraud_model():
     X, y = prep.prepare_features(df)
     X_train, X_test, y_train, y_test = prep.split_data(X, y)
     X_train_scaled, X_test_scaled = prep.scale_features(X_train, X_test)
+
+
+
+    ## Baseline modeling
+    print("\n--- Baseline Model Running----")
+    baseline = LogisticRegression(max_iter=1000)
+    baseline.fit(X_train_scaled , y_train)
+    baseline_pred = baseline.predict(X_test_scaled)
+    baseline_recall = recall_score(y_test,baseline_pred)
+    baseline_accuracy = accuracy_score(y_test , baseline_pred)
 
     # 3. Initialize Random Forest
     # class_weight='balanced' helps the model focus on the rare fraud cases
