@@ -41,7 +41,7 @@ def train_fraud_model():
     model = RandomForestClassifier(
         n_estimators=100,
         max_depth=10,
-        class_weight={0:1 , 1:50},
+        class_weight='balanced',
         random_state=42
     )
 
