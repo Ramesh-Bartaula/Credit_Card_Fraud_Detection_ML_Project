@@ -54,8 +54,12 @@ def train_fraud_model():
     model = RandomForestClassifier(
         n_estimators=rf_params['n_estimators'],
         max_depth=rf_params['max_depth'],
+        min_samples_split=rf_params['min_samples_split'],
+        min_samples_leaf=rf_params['min_samples_leaf'],
+        max_features=rf_params['max_features'],
+        class_weight=rf_params['class_weight'],
         random_state=rf_params['random_state'],
-        class_weight= 'balanced'
+        n_jobs=rf_params['n_jobs']
     )
 
     # Training the model
