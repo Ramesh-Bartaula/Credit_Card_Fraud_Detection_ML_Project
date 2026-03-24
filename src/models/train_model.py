@@ -4,8 +4,9 @@ import pandas as pd
 import yaml
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import classification_report, confusion_matrix , recall_score, accuracy_score , root_mean_squared_error
+from sklearn.metrics import classification_report, confusion_matrix , recall_score, accuracy_score , root_mean_squared_error, ConfusionMatrixDisplay
 from pathlib import Path
+import matplotlib.pyplot as plt
 
 # Importing preprocessor class
 from src.data.preprocessing import SimpleFraudPreprocessor
@@ -89,7 +90,15 @@ def train_fraud_model():
     print(f"Classification Report of Random forest model")
     print(classification_report(y_test, rf_pred))
     print(f"Confusion Matrix of Random Forest Model")
-    print(confusion_matrix(y_test, rf_pred))
+
+    cmf = confusion_matrix(y_test, rf_pred)
+    print(cmf)
+
+
+
+    display = ConfusionMatrixDisplay(confusion_matrix = cmf ,  display_labels = ['Fraud' , 'Normal'])
+    display.plot()
+    plt.show()
 
     # Saving the best Model and the Preprocessor artifacts
 
