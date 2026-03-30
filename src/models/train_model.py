@@ -224,6 +224,7 @@ def train_fraud_model():
     importances = model.feature_importances_
 
     print("\n--- Feature Importances ---")
+
     for name, imp in sorted(zip(feature_names, importances), key=lambda x: -x[1]):
         bar = '█' * int(imp * 100)
         print(f"{name:<28} {imp:.4f}  {bar}")
