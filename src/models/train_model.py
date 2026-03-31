@@ -246,3 +246,22 @@ def train_fraud_model():
 
 if __name__ == "__main__":
     train_fraud_model()
+
+    ## I added some other feature so that the model has enough features to learn patterns.
+    ## I used RobustScalar instead of StandardScalar.
+    ## Used loop for best threshold from 0.10 to 0.65 and
+    ## I used SMOTE.
+
+    ## StandardScaler uses mean and standard deviation, both get pulled by extreme values.
+    ## RobustScaler uses median and IQR instead — extreme outliers have zero effect on it.
+
+    ## The default 0.5 was designed for balanced datasets. Your dataset is 99% normal, 1% fraud — so the model naturally assigns low probabilities to fraud. At threshold 0.5, almost nothing gets flagged as fraud.
+    ## Instead of "flag if >50% confident it's fraud"
+    ## "flag if >25% confident it's fraud"
+
+    ## This catches more fraud at the cost of more false alarms. The loop finds the sweet spot automatically instead of guessing.
+    ## Without SMOTE the model trained on:
+    ## 69,300 Normal examples
+    ##  700 Fraud examples.
+    ## It learned that saying Normal for everything gives 99% accuracy, so it did exactly that.
+    ## SMOTE created synthetic fraud samples to balance it to 69,300 vs 69,300. Now the model had to learn what separates fraud from normal, because it couldn't cheat by always predicting Normal anymore.
