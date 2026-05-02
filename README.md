@@ -839,11 +839,11 @@ in the Software without restriction...
 
 - **GitHub Issues**: [Report bugs](https://github.com/Ramesh-Bartaula/Credit_Card_Fraud_Detection_ML_Project/issues)
 - **Questions**: Open discussion in GitHub Discussions
-- **Email**: [Contact author]
+- **Email**: [basantimaya12@gmail.com] or [nirajmali247@gmail.com]
 
 ---
 
-## ⭐ Key Takeaways
+##  Key Takeaways
 
 1. **Class imbalance is critical** - SMOTE solves the "always predict normal" problem
 2. **Default threshold is wrong** - 0.5 is for balanced data; optimize for your use case
@@ -855,4 +855,4 @@ in the Software without restriction...
 
 **Last Updated**: May 2026  
 **Status**: Production Ready  
-**Version**: 1.0.0
+
