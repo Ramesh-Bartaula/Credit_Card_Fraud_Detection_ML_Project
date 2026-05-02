@@ -1,8 +1,4 @@
-# 🛡️ Credit Card Fraud Detection ML Project
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![Scikit-learn](https://img.shields.io/badge/scikit--learn-compatible-brightgreen.svg)](https://scikit-learn.org/)
+#  Credit Card Fraud Detection ML Project
 
 ## 📋 Table of Contents
 
@@ -24,7 +20,7 @@
 - [Contributing](#contributing)
 - [License](#license)
 
-## 📌 Overview
+##  Overview
 
 This is a **production-ready credit card fraud detection system** built with scikit-learn and Python. The project implements an end-to-end machine learning pipeline that detects fraudulent transactions with high recall while minimizing false alarms.
 
@@ -32,7 +28,7 @@ The system combines **advanced preprocessing**, **intelligent feature engineerin
 
 **Key Innovation:** Instead of relying on the default 0.5 probability threshold, the model dynamically finds the optimal threshold that maximizes the F1-score while guaranteeing a minimum recall of 60% — ensuring we catch most fraud cases.
 
-## 🎯 Problem Statement
+## Problem Statement
 
 Credit card fraud detection presents multiple challenges:
 
@@ -42,33 +38,33 @@ Credit card fraud detection presents multiple challenges:
 4. **Trade-off Management**: Must balance catching fraud (recall) vs. false alarms (precision)
 5. **Temporal & Behavioral Patterns**: Fraudsters exploit specific times and merchant behaviors
 
-## ✨ Key Features
+##  Key Features
 
 ### Data Processing
-- ✅ **RobustScaler** - Outlier-resistant scaling using median & IQR (not mean & std)
-- ✅ **Stratified Train-Test Split** - Maintains fraud distribution in train/test sets
-- ✅ **SMOTE** - Synthetic Minority Oversampling Technique to balance fraud/normal cases
-- ✅ **Feature Engineering** - Temporal, merchant-based, and behavioral features
+-  **RobustScaler** - Outlier-resistant scaling using median & IQR (not mean & std)
+-  **Stratified Train-Test Split** - Maintains fraud distribution in train/test sets
+-  **SMOTE** - Synthetic Minority Oversampling Technique to balance fraud/normal cases
+-  **Feature Engineering** - Temporal, merchant-based, and behavioral features
 
 ### Model Development
-- ✅ **Logistic Regression Baseline** - Fast sanity check model
-- ✅ **Random Forest Classifier** - Ensemble learning with feature importance
-- ✅ **Configurable Hyperparameters** - All params in YAML for easy tuning
-- ✅ **Threshold Optimization** - Automatic threshold tuning (0.10-0.70 range)
+-  **Logistic Regression Baseline** - Fast sanity check model
+-  **Random Forest Classifier** - Ensemble learning with feature importance
+-  **Configurable Hyperparameters** - All params in YAML for easy tuning
+-  **Threshold Optimization** - Automatic threshold tuning (0.10-0.70 range)
 
 ### Evaluation & Monitoring
-- ✅ **Comprehensive Metrics** - Accuracy, Recall, Precision, F1, ROC-AUC
-- ✅ **Confusion Matrix Visualization** - Clear view of TP, FP, FN, TN
-- ✅ **Feature Importance Analysis** - Understand what drives predictions
-- ✅ **Model Comparison** - Baseline vs. Random Forest side-by-side
+-  **Comprehensive Metrics** - Accuracy, Recall, Precision, F1, ROC-AUC
+-  **Confusion Matrix Visualization** - Clear view of TP, FP, FN, TN
+-  **Feature Importance Analysis** - Understand what drives predictions
+-  **Model Comparison** - Baseline vs. Random Forest side-by-side
 
 ### Production Ready
-- ✅ **Model Persistence** - Trained models saved as `.joblib` files
-- ✅ **Preprocessor Serialization** - All encoders & scalers saved for inference
-- ✅ **Threshold Persistence** - Best threshold saved alongside model
-- ✅ **Structured Logging** - Clear pipeline execution output
+-  **Model Persistence** - Trained models saved as `.joblib` files
+-  **Preprocessor Serialization** - All encoders & scalers saved for inference
+-  **Threshold Persistence** - Best threshold saved alongside model
+-  **Structured Logging** - Clear pipeline execution output
 
-## 🏗️ Architecture
+##  Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -145,7 +141,7 @@ Credit card fraud detection presents multiple challenges:
         └────────────────────────────────────┘
 ```
 
-## 📊 Dataset
+##  Dataset
 
 ### Overview
 - **Total Records**: 100,000 credit card transactions
@@ -275,7 +271,7 @@ Credit_Card_Fraud_Detection_ML_Project/
 └── README.md                         # This file
 ```
 
-## 🚀 Installation
+##  Installation
 
 ### Prerequisites
 - Python 3.8+
@@ -355,7 +351,7 @@ python main.py
 
 ```
 ============================================================
- 🛡️  FRAUD DETECTION SYSTEM - PIPELINE STARTING
+  FRAUD DETECTION SYSTEM - PIPELINE STARTING
 ============================================================
 
 --- Loading Data ---
@@ -384,7 +380,7 @@ Best threshold: 0.30 | F1: 0.8543 | Min recall enforced: 0.60
 ✅ PIPELINE COMPLETED SUCCESSFULLY!
 ```
 
-## 🔄 Pipeline Workflow
+##  Pipeline Workflow
 
 ### Step 1: Data Loading (`train_model.py`)
 ```python
@@ -505,7 +501,7 @@ def find_best_threshold(model, X_test_scaled, y_test, min_recall=0.60):
 Threshold   | Recall   | Precision  | F1       | False Alarms | Fraud Caught
 0.10        | 0.85     | 0.0170     | 0.0333   | 14,724       | 254
 0.20        | 0.70     | 0.0186     | 0.0361   | 11,163       | 211
-0.25        | 0.62     | 0.0190     | 0.0368   | 9,674        | 187  <-- BEST ⭐
+0.25        | 0.62     | 0.0190     | 0.0368   | 9,674        | 187  <-- BEST 
 0.50        | 0.37     | 0.0215     | 0.0407   | 4,997        | 110
 ```
 
@@ -538,7 +534,7 @@ joblib.dump(preprocessor_artifacts, 'models/artifacts/preprocessor.joblib')
 joblib.dump(best_threshold, 'models/artifacts/best_threshold.joblib')
 ```
 
-## 📊 Model Performance
+##  Model Performance
 
 ### Actual Results from Execution
 
@@ -551,7 +547,7 @@ Threshold  | Recall  | Precision | F1      | False Alarms | Fraud Caught
 0.10       | 0.85    | 0.0170    | 0.0333  | 14,724       | 254  <-- best
 0.15       | 0.77    | 0.0178    | 0.0347  | 12,768       | 231  <-- best
 0.20       | 0.70    | 0.0186    | 0.0361  | 11,163       | 211  <-- best
-0.25       | 0.62    | 0.0190    | 0.0368  | 9,674        | 187  <-- best ⭐ SELECTED
+0.25       | 0.62    | 0.0190    | 0.0368  | 9,674        | 187  <-- best -----> SELECTED
 0.30       | 0.56    | 0.0192    | 0.0371  | 8,537        | 167  (recall too low)
 0.35       | 0.50    | 0.0195    | 0.0375  | 7,554        | 150  (recall too low)
 0.40       | 0.44    | 0.0194    | 0.0372  | 6,617        | 131  (recall too low)
@@ -583,10 +579,10 @@ Actual Fraud            113                187
 ```
 
 **Performance Breakdown:**
-- **True Negatives (20,026)**: Normal transactions correctly identified ✓
-- **False Positives (9,674)**: Normal flagged as fraud (false alarms) ⚠️
-- **False Negatives (113)**: Fraud missed ❌
-- **True Positives (187)**: Fraud correctly caught ✓
+- **True Negatives (20,026)**: Normal transactions correctly identified 
+- **False Positives (9,674)**: Normal flagged as fraud (false alarms) 
+- **False Negatives (113)**: Fraud missed 
+- **True Positives (187)**: Fraud correctly caught 
 
 **Key Metrics:**
 - **Fraud Detection Rate**: 187 / 300 = **62.3%** ← catches about 62% of fraud
@@ -634,7 +630,7 @@ threshold_tuning:
     step: 0.05
 ```
 
-## 💻 Usage Examples
+##  Usage Examples
 
 ### Example 1: Basic Training
 
@@ -674,7 +670,7 @@ proba = model.predict_proba(new_transaction_prepared)[:, 1]
 prediction = (proba >= best_threshold).astype(int)
 
 print(f"Fraud probability: {proba[0]:.2%}")
-print(f"Prediction: {'FRAUD 🚨' if prediction[0] else 'NORMAL ✓'}")
+print(f"Prediction: {'FRAUD ' if prediction[0] else 'NORMAL ✓'}")
 ```
 
 ### Example 4: Custom Threshold
@@ -706,7 +702,7 @@ conservative | Threshold: 0.40 | Fraud caught: 131  | False alarms: 6,617
 strict       | Threshold: 0.50 | Fraud caught: 110  | False alarms: 4,997
 ```
 
-## 🔬 Technical Details
+##  Technical Details
 
 ### Why RobustScaler?
 
@@ -741,7 +737,7 @@ Fraud: 700 examples (1%)
 Model learns:
 "Always predict Normal"
 → 99% accuracy
-→ Catches 0% of fraud ❌
+→ Catches 0% of fraud 
 ```
 
 **With SMOTE:**
@@ -792,36 +788,17 @@ Actual Normal  81,641   2,802
 ```
 
 **Interpretation:**
-- **True Negatives (81,641)**: Normal transactions correctly identified ✓
-- **False Positives (2,802)**: Normal flagged as fraud (false alarms) ⚠️
-- **False Negatives (111)**: Fraud missed ❌
-- **True Positives (889)**: Fraud correctly caught ✓
+- **True Negatives (81,641)**: Normal transactions correctly identified 
+- **False Positives (2,802)**: Normal flagged as fraud (false alarms) 
+- **False Negatives (111)**: Fraud missed 
+- **True Positives (889)**: Fraud correctly caught 
 
 **Performance:**
 - Fraud detection rate: 889 / 1000 = **88.9%**
 - False alarm rate: 2,802 / 84,443 = **3.3%**
 
-### Business Impact
 
-**Scenario: 100,000 transactions (actual test set)**
-- Actual fraudulent transactions: 300
-- With this model at threshold 0.25:
-  - **Fraud caught**: 187 (62.3% of fraud)
-  - **False alarms**: 9,674 (need investigation)
-  - **Missed fraud**: 113 cases
-  - **Cost per catch**: ~$51.70 per fraud prevented
-  - **Investigation load**: 9,861 alerts (187 true + 9,674 false)
-  - **Precision**: 1.9% (low but acceptable for fraud prevention)
-
-**Scenario: 1 Million transactions/month (scaled)**
-- Expected fraud: 10,000 fraudulent transactions
-- With this model:
-  - **Fraud caught**: 6,230 (62.3% of fraud)
-  - **False alarms**: 96,740 (requires investigation)
-  - **Cost saved**: ~$311,500 (@ $50/case prevented)
-  - **Investigation load**: 96,740 alerts (manageable with automated tiers)
-
-## 🤝 Contributing
+##  Contributing
 
 ### Development Workflow
 
@@ -862,13 +839,13 @@ of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction...
 ```
 
-## 👨‍💻 Author
+##  Author
 
-**Ramesh Bartaula**
+**Ramesh Bartaula and Niraj K Mali**
 - GitHub: [@Ramesh-Bartaula](https://github.com/Ramesh-Bartaula)
 - Project: [Credit Card Fraud Detection ML](https://github.com/Ramesh-Bartaula/Credit_Card_Fraud_Detection_ML_Project)
 
-## 📚 References
+##  References
 
 ### Key Techniques Used
 - **SMOTE**: [Imbalanced-learn Documentation](https://imbalanced-learn.org/stable/references/generated/imblearn.over_sampling.SMOTE.html)
@@ -884,11 +861,11 @@ in the Software without restriction...
 
 - **GitHub Issues**: [Report bugs](https://github.com/Ramesh-Bartaula/Credit_Card_Fraud_Detection_ML_Project/issues)
 - **Questions**: Open discussion in GitHub Discussions
-- **Email**: [Contact author]
+- **Email**: [basantimaya12@gmail.com] OR [nirajmali247@gmail.com]
 
 ---
 
-## ⭐ Key Takeaways
+##  Key Takeaways
 
 1. **Class imbalance is critical** - SMOTE solved the "always predict normal" problem
 2. **Default threshold is wrong** - 0.5 is for balanced data; optimal threshold was 0.25
@@ -903,4 +880,4 @@ in the Software without restriction...
 
 **Last Updated**: May 2026  
 **Status**: Production Ready  
-**Version**: 1.0.0
+
