@@ -180,7 +180,7 @@ Credit card fraud detection presents multiple challenges:
 ## 📈 Visualizations
 
 ### 1. Distribution of Transaction Classes
-![Class Distribution](src/visualization/images/Class_Distribution.png)
+![Class Distribution](src/visualization/Class_Distribution.png)
 
 **Key Insight**: Extreme class imbalance visible on logarithmic scale
 - Legitimate transactions: ~284K (99.83%)
@@ -188,7 +188,7 @@ Credit card fraud detection presents multiple challenges:
 - **Challenge**: Model must learn fraud patterns from rare examples
 
 ### 2. Fraud Rate by Hour of Day
-![Fraud Rate by Time](src/visualization/images/Fraud_Rate_by_time.png)
+![Fraud Rate by Time](src/visualization/Fraud_Rate_by_time.png)
 
 **Key Insights**:
 - Peak fraud hours: 1 AM (1:26%), 4 PM (1:30%), 8 AM (1:25%)
@@ -197,7 +197,7 @@ Credit card fraud detection presents multiple challenges:
 - **Application**: Time-of-day features in model input
 
 ### 3. Fraudulent Transactions by Day of Week
-![Fraud by Day](src/visualization/images/Fraud_Transcation_by_day_.png)
+![Fraud by Day](src/visualization/Fraud_Transcation_by_day.png)
 
 **Key Insights**:
 - Peak fraud day: Sunday (~166 cases)
@@ -206,7 +206,7 @@ Credit card fraud detection presents multiple challenges:
 - **Application**: Day-of-week feature captures behavioral patterns
 
 ### 4. Transaction Amount Distribution by Class
-![Amount Distribution](src/visualization/images/Trasncation_distribution_by_class.png)
+![Amount Distribution](src/visualization/Trasncation_distribution_by_class.png)
 
 **Key Insights**:
 - Both fraud and legitimate show similar amount distributions
@@ -590,7 +590,7 @@ Actual Fraud            113                187
 - **Precision**: 187 / 9,861 = **1.9%** ← most alerts are false
 - **Recall**: 187 / 300 = **62.3%** ← meets minimum 60% requirement
 
-![Confusion Matrix](confusion_matrix.png)
+![Confusion Matrix]()
 
 ## ⚙️ Configuration
 
