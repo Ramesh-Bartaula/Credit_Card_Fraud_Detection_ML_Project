@@ -766,15 +766,6 @@ Actual Normal  81,641   2,802
 - Fraud detection rate: 889 / 1000 = **88.9%**
 - False alarm rate: 2,802 / 84,443 = **3.3%**
 
-### Business Impact
-
-**Scenario: 1 Million transactions/month**
-- Expected fraud: 1,700 fraudulent transactions
-- With this model:
-  - **Fraud caught**: 1,513 (89% of fraud)
-  - **False alarms**: 56,000 (requires investigation)
-  - **Cost saved**: ~$76,650 (@ $50/case)
-  - **Investigation load**: 56K (manageable with tiers)
 
 ##  Contributing
 
