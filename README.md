@@ -765,7 +765,7 @@ Problem on imbalanced data:
 - Catches ~15% of fraud
 ```
 
-**Optimized Threshold (0.30):**
+** Optimized Threshold (0.30):**
 ```
 "Predict fraud if model is ≥30% confident"
 
@@ -776,7 +776,7 @@ Benefits:
 - Guaranteed minimum recall: 60%
 ```
 
-## 📈 Results & Analysis
+##  Results & Analysis
 
 ### Confusion Matrix Example
 
@@ -827,7 +827,7 @@ Actual Normal  81,641   2,802
    git push origin feature/your-feature
    ```
 
-## 📄 License
+##  License
 
 MIT License - see [LICENSE](LICENSE) file
 
