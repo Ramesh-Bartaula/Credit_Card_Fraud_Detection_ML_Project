@@ -590,7 +590,7 @@ Actual Fraud            113                187
 - **Precision**: 187 / 9,861 = **1.9%** ← most alerts are false
 - **Recall**: 187 / 300 = **62.3%** ← meets minimum 60% requirement
 
-![Confusion Matrix]()
+![Confusion Matrix](src/visualization/confusion_matrix.png)
 
 ## ⚙️ Configuration
 
