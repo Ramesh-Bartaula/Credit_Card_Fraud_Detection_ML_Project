@@ -1,4 +1,4 @@
-# 🛡️ Credit Card Fraud Detection ML Project
+#  Credit Card Fraud Detection ML Project
 
 ## 📋 Table of Contents
 
@@ -20,7 +20,7 @@
 - [Contributing](#contributing)
 - [License](#license)
 
-## 📌 Overview
+##  Overview
 
 This is a **production-ready credit card fraud detection system** built with scikit-learn and Python. The project implements an end-to-end machine learning pipeline that detects fraudulent transactions with high recall while minimizing false alarms.
 
@@ -28,7 +28,7 @@ The system combines **advanced preprocessing**, **intelligent feature engineerin
 
 **Key Innovation:** Instead of relying on the default 0.5 probability threshold, the model dynamically finds the optimal threshold that maximizes the F1-score while guaranteeing a minimum recall of 60% — ensuring we catch most fraud cases.
 
-## 🎯 Problem Statement
+##  Problem Statement
 
 Credit card fraud detection presents multiple challenges:
 
@@ -38,33 +38,33 @@ Credit card fraud detection presents multiple challenges:
 4. **Trade-off Management**: Must balance catching fraud (recall) vs. false alarms (precision)
 5. **Temporal & Behavioral Patterns**: Fraudsters exploit specific times and merchant behaviors
 
-## ✨ Key Features
+##  Key Features
 
 ### Data Processing
-- ✅ **RobustScaler** - Outlier-resistant scaling using median & IQR (not mean & std)
-- ✅ **Stratified Train-Test Split** - Maintains fraud distribution in train/test sets
-- ✅ **SMOTE** - Synthetic Minority Oversampling Technique to balance fraud/normal cases
-- ✅ **Feature Engineering** - Temporal, merchant-based, and behavioral features
+-  **RobustScaler** - Outlier-resistant scaling using median & IQR (not mean & std)
+-  **Stratified Train-Test Split** - Maintains fraud distribution in train/test sets
+-  **SMOTE** - Synthetic Minority Oversampling Technique to balance fraud/normal cases
+-  **Feature Engineering** - Temporal, merchant-based, and behavioral features
 
 ### Model Development
-- ✅ **Logistic Regression Baseline** - Fast sanity check model
-- ✅ **Random Forest Classifier** - Ensemble learning with feature importance
-- ✅ **Configurable Hyperparameters** - All params in YAML for easy tuning
-- ✅ **Threshold Optimization** - Automatic threshold tuning (0.10-0.70 range)
+-  **Logistic Regression Baseline** - Fast sanity check model
+-  **Random Forest Classifier** - Ensemble learning with feature importance
+-  **Configurable Hyperparameters** - All params in YAML for easy tuning
+-  **Threshold Optimization** - Automatic threshold tuning (0.10-0.70 range)
 
 ### Evaluation & Monitoring
-- ✅ **Comprehensive Metrics** - Accuracy, Recall, Precision, F1, ROC-AUC
-- ✅ **Confusion Matrix Visualization** - Clear view of TP, FP, FN, TN
-- ✅ **Feature Importance Analysis** - Understand what drives predictions
-- ✅ **Model Comparison** - Baseline vs. Random Forest side-by-side
+-  **Comprehensive Metrics** - Accuracy, Recall, Precision, F1, ROC-AUC
+-  **Confusion Matrix Visualization** - Clear view of TP, FP, FN, TN
+-  **Feature Importance Analysis** - Understand what drives predictions
+-  **Model Comparison** - Baseline vs. Random Forest side-by-side
 
 ### Production Ready
-- ✅ **Model Persistence** - Trained models saved as `.joblib` files
-- ✅ **Preprocessor Serialization** - All encoders & scalers saved for inference
-- ✅ **Threshold Persistence** - Best threshold saved alongside model
-- ✅ **Structured Logging** - Clear pipeline execution output
+-  **Model Persistence** - Trained models saved as `.joblib` files
+-  **Preprocessor Serialization** - All encoders & scalers saved for inference
+-  **Threshold Persistence** - Best threshold saved alongside model
+-  **Structured Logging** - Clear pipeline execution output
 
-## 🏗️ Architecture
+##  Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -141,7 +141,7 @@ Credit card fraud detection presents multiple challenges:
         └────────────────────────────────────┘
 ```
 
-## 📊 Dataset
+##  Dataset
 
 ### Overview
 - **Total Records**: 284,807 credit card transactions
@@ -270,7 +270,7 @@ Credit_Card_Fraud_Detection_ML_Project/
 └── README.md                         # This file
 ```
 
-## 🚀 Installation
+##  Installation
 
 ### Prerequisites
 - Python 3.8+
@@ -350,7 +350,7 @@ python main.py
 
 ```
 ============================================================
- 🛡️  FRAUD DETECTION SYSTEM - PIPELINE STARTING
+   FRAUD DETECTION SYSTEM - PIPELINE STARTING
 ============================================================
 
 --- Loading Data ---
@@ -376,7 +376,7 @@ Best threshold: 0.30 | F1: 0.8543 | Min recall enforced: 0.60
 --- Evaluation ---
 ... [detailed metrics]
 
-✅ PIPELINE COMPLETED SUCCESSFULLY!
+ PIPELINE COMPLETED SUCCESSFULLY!
 ```
 
 ## 🔄 Pipeline Workflow
@@ -648,7 +648,7 @@ proba = model.predict_proba(new_transaction_prepared)[:, 1]
 prediction = (proba >= best_threshold).astype(int)
 
 print(f"Fraud probability: {proba[0]:.2%}")
-print(f"Prediction: {'FRAUD 🚨' if prediction[0] else 'NORMAL ✓'}")
+print(f"Prediction: {'FRAUD ' if prediction[0] else 'NORMAL ✓'}")
 ```
 
 ### Example 4: Custom Threshold
@@ -758,8 +758,8 @@ Actual Normal  81,641   2,802
 
 **Interpretation:**
 - **True Negatives (81,641)**: Normal transactions correctly identified ✓
-- **False Positives (2,802)**: Normal flagged as fraud (false alarms) ⚠️
-- **False Negatives (111)**: Fraud missed ❌
+- **False Positives (2,802)**: Normal flagged as fraud (false alarms) 
+- **False Negatives (111)**: Fraud missed 
 - **True Positives (889)**: Fraud correctly caught ✓
 
 **Performance:**
@@ -776,7 +776,7 @@ Actual Normal  81,641   2,802
   - **Cost saved**: ~$76,650 (@ $50/case)
   - **Investigation load**: 56K (manageable with tiers)
 
-## 🤝 Contributing
+##  Contributing
 
 ### Development Workflow
 
@@ -817,9 +817,9 @@ of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction...
 ```
 
-## 👨‍💻 Author
+##  Author
 
-**Ramesh Bartaula**
+**Ramesh Bartaula and Niraj K. Mali**
 - GitHub: [@Ramesh-Bartaula](https://github.com/Ramesh-Bartaula)
 - Project: [Credit Card Fraud Detection ML](https://github.com/Ramesh-Bartaula/Credit_Card_Fraud_Detection_ML_Project)
 
