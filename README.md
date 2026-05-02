@@ -196,7 +196,7 @@ Credit card fraud detection presents multiple challenges:
 - **Application**: Time-of-day features in model input
 
 ### 3. Fraudulent Transactions by Day of Week
-![Fraud by Day](src/visualization/Fraud_Transcation_by_day_.png)
+![Fraud by Day](src/visualization/Fraud_Transcation_by_day.png)
 
 **Key Insights**:
 - Peak fraud day: Sunday (~166 cases)
