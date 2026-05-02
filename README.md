@@ -179,7 +179,7 @@ Credit card fraud detection presents multiple challenges:
 ## 📈 Visualizations
 
 ### 1. Distribution of Transaction Classes
-![Class Distribution](src/visualization/Class_Distribution.png)
+![Class Distribution](src/visualization/Class Distribution.png)
 
 **Key Insight**: Extreme class imbalance visible on logarithmic scale
 - Legitimate transactions: ~284K (99.83%)
