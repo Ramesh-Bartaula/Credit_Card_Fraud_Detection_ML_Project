@@ -1,9 +1,5 @@
 # 🛡️ Credit Card Fraud Detection ML Project
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![Scikit-learn](https://img.shields.io/badge/scikit--learn-compatible-brightgreen.svg)](https://scikit-learn.org/)
-
 ## 📋 Table of Contents
 
 - [Overview](#overview)
@@ -183,7 +179,7 @@ Credit card fraud detection presents multiple challenges:
 ## 📈 Visualizations
 
 ### 1. Distribution of Transaction Classes
-![Class Distribution](src/visualization/images/Class_Distribution.png)
+![Class Distribution](src/visualization/Class_Distribution.png)
 
 **Key Insight**: Extreme class imbalance visible on logarithmic scale
 - Legitimate transactions: ~284K (99.83%)
@@ -191,7 +187,7 @@ Credit card fraud detection presents multiple challenges:
 - **Challenge**: Model must learn fraud patterns from rare examples
 
 ### 2. Fraud Rate by Hour of Day
-![Fraud Rate by Time](src/visualization/images/Fraud_Rate_by_time.png)
+![Fraud Rate by Time](src/visualization/Fraud_Rate_by_time.png)
 
 **Key Insights**:
 - Peak fraud hours: 1 AM (1:26%), 4 PM (1:30%), 8 AM (1:25%)
@@ -200,7 +196,7 @@ Credit card fraud detection presents multiple challenges:
 - **Application**: Time-of-day features in model input
 
 ### 3. Fraudulent Transactions by Day of Week
-![Fraud by Day](src/visualization/images/Fraud_Transcation_by_day_.png)
+![Fraud by Day](src/visualization/Fraud_Transcation_by_day_.png)
 
 **Key Insights**:
 - Peak fraud day: Sunday (~166 cases)
@@ -209,7 +205,7 @@ Credit card fraud detection presents multiple challenges:
 - **Application**: Day-of-week feature captures behavioral patterns
 
 ### 4. Transaction Amount Distribution by Class
-![Amount Distribution](src/visualization/images/Trasncation_distribution_by_class.png)
+![Amount Distribution](src/visualization/Trasncation_distribution_by_class.png)
 
 **Key Insights**:
 - Both fraud and legitimate show similar amount distributions
