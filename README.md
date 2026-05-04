@@ -185,7 +185,7 @@ Credit card fraud detection presents multiple challenges:
 ![Fraud Rate by Time](src/visualization/Fraud_Rate_by_time.png)
 
 **Key Insights**:
-- Peak fraud hours: 1 AM , 4 PM , 8 AM 
+- Peak fraud hours: 1 AM , 6 PM , 8 AM 
 - Lowest fraud hours: 1 PM , 5 PM 
 - **Pattern**: Fraudsters active at night and during business hours transitions
 - **Application**: Time-of-day features in model input
