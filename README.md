@@ -11,7 +11,7 @@
 - [Project Structure](#project-structure)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
-- [Pipeline Workflow](#pipeline-workflow)
+- [Workflow](#workflow)
 - [Model Performance](#model-performance)
 - [Configuration](#configuration)
 - [Usage Examples](#usage-examples)
