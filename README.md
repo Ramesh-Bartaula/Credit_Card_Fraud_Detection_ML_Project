@@ -298,7 +298,7 @@ pip install -r requirements.txt
 The project expects `credit_card_fraud_dataset.csv` in `data/raw/`:
 
 **Option A: Manual Download**
-1. Visit [Kaggle Credit Card Fraud Dataset](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud)
+1. Visit [Kaggle Credit Card Fraud Dataset](https://www.kaggle.com/datasets/bhadramohit/credit-card-fraud-detection/data)
 2. Download the CSV file
 3. Extract to `data/raw/credit_card_fraud_dataset.csv`
 
