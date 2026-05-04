@@ -24,7 +24,7 @@
 
 This is a **production-ready credit card fraud detection system** built with scikit-learn and Python. The project implements an end-to-end machine learning pipeline that detects fraudulent transactions with high recall while minimizing false alarms.
 
-The system combines **advanced preprocessing**, **intelligent feature engineering**, **SMOTE-based class balancing**, and **threshold optimization** to achieve superior fraud detection performance on highly imbalanced datasets (99.83% legitimate, 0.17% fraudulent).
+The system combines **advanced preprocessing**, **intelligent feature engineering**, **SMOTE-based class balancing**, and **threshold optimization** to achieve superior fraud detection performance on highly imbalanced datasets (99% legitimate, 1% fraudulent).
 
 **Key Innovation:** Instead of relying on the default 0.5 probability threshold, the model dynamically finds the optimal threshold that maximizes the F1-score while guaranteeing a minimum recall of 60% — ensuring we catch most fraud cases.
 
@@ -32,7 +32,7 @@ The system combines **advanced preprocessing**, **intelligent feature engineerin
 
 Credit card fraud detection presents multiple challenges:
 
-1. **Extreme Class Imbalance**: Fraudulent transactions represent only 0.17% of all transactions
+1. **Extreme Class Imbalance**: Fraudulent transactions represent only 1% of all transactions
 2. **Default Threshold Inadequacy**: Standard 0.5 threshold fails on imbalanced data (yields ~99% accuracy but catches almost no fraud)
 3. **Outlier Sensitivity**: Standard scaling fails with extreme transaction amounts
 4. **Trade-off Management**: Must balance catching fraud (recall) vs. false alarms (precision)
@@ -58,11 +58,6 @@ Credit card fraud detection presents multiple challenges:
 -  **Feature Importance Analysis** - Understand what drives predictions
 -  **Model Comparison** - Baseline vs. Random Forest side-by-side
 
-### Production Ready
--  **Model Persistence** - Trained models saved as `.joblib` files
--  **Preprocessor Serialization** - All encoders & scalers saved for inference
--  **Threshold Persistence** - Best threshold saved alongside model
--  **Structured Logging** - Clear pipeline execution output
 
 ##  Architecture
 
@@ -162,7 +157,7 @@ Credit card fraud detection presents multiple challenges:
 | Location | Categorical | Geographic location |
 | IsFraud | Binary | Target (0=Legitimate, 1=Fraud) |
 
-### Derived Features (Created by Pipeline)
+### Derived Features 
 | Feature | Source | Purpose |
 |---------|--------|---------|
 | Hour | TransactionDate | Time-of-day pattern detection |
@@ -191,8 +186,8 @@ Credit card fraud detection presents multiple challenges:
 ![Fraud Rate by Time](src/visualization/Fraud_Rate_by_time.png)
 
 **Key Insights**:
-- Peak fraud hours: 1 AM (1:26%), 4 PM (1:30%), 8 AM (1:25%)
-- Lowest fraud hours: 1 PM (0:77%), 5 PM (0:74%)
+- Peak fraud hours: 1 AM , 4 PM , 8 AM 
+- Lowest fraud hours: 1 PM , 5 PM 
 - **Pattern**: Fraudsters active at night and during business hours transitions
 - **Application**: Time-of-day features in model input
 
@@ -200,8 +195,8 @@ Credit card fraud detection presents multiple challenges:
 ![Fraud by Day](src/visualization/Fraud_Transcation_by_day.png)
 
 **Key Insights**:
-- Peak fraud day: Sunday (~166 cases)
-- Lowest fraud day: Saturday (~126 cases)
+- Peak fraud day: Sunday
+- Lowest fraud day: Saturday
 - **Pattern**: End-of-week anomaly; weekend dip
 - **Application**: Day-of-week feature captures behavioral patterns
 
