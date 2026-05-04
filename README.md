@@ -183,8 +183,8 @@ Credit card fraud detection presents multiple challenges:
 ![Class Distribution](src/visualization/Class_Distribution.png)
 
 **Key Insight**: Extreme class imbalance visible on logarithmic scale
-- Legitimate transactions: ~284K (99.83%)
-- Fraudulent transactions: ~492 (0.17%)
+- Legitimate transactions: ~10000 (99%)
+- Fraudulent transactions: 1000 (1%)
 - **Challenge**: Model must learn fraud patterns from rare examples
 
 ### 2. Fraud Rate by Hour of Day
@@ -272,12 +272,6 @@ Credit_Card_Fraud_Detection_ML_Project/
 ```
 
 ##  Installation
-
-### Prerequisites
-- Python 3.8+
-- pip (Python package manager)
-- 4GB RAM (minimum)
-- 2GB free disk space
 
 ### Step 1: Clone Repository
 
