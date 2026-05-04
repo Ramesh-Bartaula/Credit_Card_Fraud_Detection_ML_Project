@@ -16,7 +16,6 @@
 - [Configuration](#configuration)
 - [Usage Examples](#usage-examples)
 - [Technical Details](#technical-details)
-- [Results & Analysis](#results--analysis)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -764,28 +763,6 @@ Benefits:
 - Dynamic: Automatically found by algorithm
 - Guaranteed minimum recall: 60%
 ```
-
-##  Results & Analysis
-
-### Confusion Matrix Example
-
-```
-                 Predicted
-           Normal    Fraud
-Actual Normal  81,641   2,802
-       Fraud      111      889
-```
-
-**Interpretation:**
-- **True Negatives (81,641)**: Normal transactions correctly identified 
-- **False Positives (2,802)**: Normal flagged as fraud (false alarms) 
-- **False Negatives (111)**: Fraud missed 
-- **True Positives (889)**: Fraud correctly caught 
-
-**Performance:**
-- Fraud detection rate: 889 / 1000 = **88.9%**
-- False alarm rate: 2,802 / 84,443 = **3.3%**
-
 
 ##  Contributing
 
