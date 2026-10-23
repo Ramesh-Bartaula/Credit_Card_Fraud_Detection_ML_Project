@@ -1,282 +1,187 @@
-#  Credit Card Fraud Detection ML Project
+# Credit Card Fraud Detection
 
-## 📋 Table of Contents
+A binary classifier for credit card fraud on a highly imbalanced dataset (1% fraud), built with scikit-learn and imbalanced-learn. The project compares a logistic regression baseline with a random forest, and studies how the decision threshold changes the balance between fraud caught and false alarms.
+
+**Status:** coursework project. Results come from a single train/test split and the model has low precision (see [Limitations](#limitations)). It is not intended for production use.
+
+## Table of contents
 
 - [Overview](#overview)
-- [Problem Statement](#problem-statement)
-- [Key Features](#key-features)
-- [Architecture](#architecture)
+- [Problem statement](#problem-statement)
 - [Dataset](#dataset)
-- [Visualizations](#visualizations)
-- [Project Structure](#project-structure)
+- [Pipeline](#pipeline)
+- [Results](#results)
+- [Limitations](#limitations)
 - [Installation](#installation)
-- [Quick Start](#quick-start)
-- [Workflow](#workflow)
-- [Model Performance](#model-performance)
+- [Quick start](#quick-start)
+- [Usage examples](#usage-examples)
 - [Configuration](#configuration)
-- [Usage Examples](#usage-examples)
-- [Technical Details](#technical-details)
-- [Contributing](#contributing)
+- [Project structure](#project-structure)
+- [Technical notes](#technical-notes)
 - [License](#license)
+- [Authors](#authors)
+- [References](#references)
 
-##  Overview
+## Overview
 
-This is a **production-ready credit card fraud detection system** built with scikit-learn and Python. The project implements an end-to-end machine learning pipeline that detects fraudulent transactions with high recall while minimizing false alarms.
+The pipeline parses transaction dates, builds time-based and merchant-based features, scales amount features with `RobustScaler`, balances the training set with SMOTE, and trains two models: a logistic regression baseline and a random forest. It then searches a range of probability thresholds and selects the one with the highest F1 score among those that reach at least 60% recall.
 
-The system combines **advanced preprocessing**, **intelligent feature engineering**, **SMOTE-based class balancing**, and **threshold optimization** to achieve superior fraud detection performance on highly imbalanced datasets (99% legitimate, 1% fraudulent).
+Main finding: lowering the threshold from the default 0.50 to the selected 0.25 raised the number of frauds caught from 110 to 187 (out of 300 in the test set), and raised false alarms from 4,997 to 9,674. Each additional fraud caught cost about 60 additional false alarms. Precision at the selected threshold is 1.9%.
 
-**Key Innovation:** Instead of relying on the default 0.5 probability threshold, the model dynamically finds the optimal threshold that maximizes the F1-score while guaranteeing a minimum recall of 60% — ensuring we catch most fraud cases.
+## Problem statement
 
-## Problem Statement
+1. **Class imbalance.** Fraud is 1% of transactions (99:1).
+2. **Default threshold.** On imbalanced data a 0.50 cutoff favors the majority class. In this project it caught 36.7% of fraud in the test set.
+3. **Outliers.** Transaction amounts vary widely, so scaling uses median and IQR instead of mean and standard deviation.
+4. **Trade-off.** Catching more fraud (recall) produces more false alarms (lower precision), and the right balance depends on what each kind of error costs.
+5. **Time and merchant patterns.** The feature set tests whether hour, day, and merchant history carry signal.
 
-Credit card fraud detection presents multiple challenges:
+## Dataset
 
-1. **Extreme Class Imbalance**: Fraudulent transactions represent only 1% of all transactions
-2. **Default Threshold Inadequacy**: Standard 0.5 threshold fails on imbalanced data (yields ~99% accuracy but catches almost no fraud)
-3. **Outlier Sensitivity**: Standard scaling fails with extreme transaction amounts
-4. **Trade-off Management**: Must balance catching fraud (recall) vs. false alarms (precision)
-5. **Temporal & Behavioral Patterns**: Fraudsters exploit specific times and merchant behaviors
+Source: [Kaggle Credit Card Fraud Detection dataset (bhadramohit)](https://www.kaggle.com/datasets/bhadramohit/credit-card-fraud-detection/data). See the Kaggle page for how the data was produced. Results here should not be assumed to carry over to real transaction data.
 
-##  Key Features
+| Item | Count |
+|---|---|
+| Total transactions | 100,000 |
+| Fraudulent | 1,000 (1.00%) |
+| Legitimate | 99,000 (99.00%) |
+| Training set (70%, stratified) | 70,000 (700 fraud, 69,300 legitimate) |
+| Test set (30%, stratified) | 30,000 (300 fraud, 29,700 legitimate) |
 
-### Data Processing
--  **RobustScaler** - Outlier-resistant scaling using median & IQR (not mean & std)
--  **Stratified Train-Test Split** - Maintains fraud distribution in train/test sets
--  **SMOTE** - Synthetic Minority Oversampling Technique to balance fraud/normal cases
--  **Feature Engineering** - Temporal, merchant-based, and behavioral features
+### Raw features
 
-### Model Development
--  **Logistic Regression Baseline** - Fast sanity check model
--  **Random Forest Classifier** - Ensemble learning with feature importance
--  **Configurable Hyperparameters** - All params in YAML for easy tuning
--  **Threshold Optimization** - Automatic threshold tuning (0.10-0.70 range)
-
-### Evaluation & Monitoring
--  **Comprehensive Metrics** - Accuracy, Recall, Precision, F1, ROC-AUC
--  **Confusion Matrix Visualization** - Clear view of TP, FP, FN, TN
--  **Feature Importance Analysis** - Understand what drives predictions
--  **Model Comparison** - Baseline vs. Random Forest side-by-side
-
-
-##  Architecture
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     Raw CSV Data                             │
-└──────────────────────┬──────────────────────────────────────┘
-                       │
-┌──────────────────────▼──────────────────────────────────────┐
-│              SimpleFraudPreprocessor                         │
-│  • Parse dates, create temporal features                    │
-│  • Encode categorical variables (TransactionType, Location) │
-│  • Initialize feature builder for merchant stats            │
-└──────────────────────┬──────────────────────────────────────┘
-                       │
-┌──────────────────────▼──────────────────────────────────────┐
-│            FraudFeatureBuilder                               │
-│  • Time features: Hour, DayOfWeek, Month, Is_night, etc.   │
-│  • Merchant stats: fraud_rate, tx_count, avg_amount         │
-│  • Engineered features: Amount_vs_merchant_avg              │
-└──────────────────────┬──────────────────────────────────────┘
-                       │
-┌──────────────────────▼──────────────────────────────────────┐
-│           Train-Test Split (70-30)                           │
-│  • Stratified by IsFraud to maintain distribution           │
-└──────────────────┬────────────────────────────────────────┘
-                   │
-        ┌──────────┴──────────┐
-        │                     │
-    ┌───▼────┐            ┌──▼────┐
-    │ TRAINING│            │ TEST  │
-    │ Data    │            │ Data  │
-    └───┬────┘            └──┬────┘
-        │                     │
-┌───────▼────────────────┐   │
-│  RobustScaler.fit()    │   │
-│  Scale Amount features │   │
-└───────┬────────────────┘   │
-        │                     │
-┌───────▼──────────────────────────────────────┐
-│          SMOTE Oversampling                   │
-│  Normal: 69,300 → 69,300                     │
-│  Fraud: 700 → 69,300                         │
-│  Now model can learn patterns, not cheat     │
-└───────┬──────────────────────────────────────┘
-        │
-    ┌───┴──────────────────────────────┐
-    │                                   │
-┌───▼──────────────┐         ┌────────▼──────────────┐
-│  Model 1: LR     │         │  Model 2: Random      │
-│  Baseline        │         │  Forest (Main)        │
-└───┬──────────────┘         └────────┬──────────────┘
-    │                                  │
-    └──────────────────────┬───────────┘
-                           │
-        ┌──────────────────▼─────────────────┐
-        │  Threshold Optimization            │
-        │  Test thresholds: 0.10 to 0.70     │
-        │  Maximize F1 while keeping         │
-        │  Recall >= 60%                     │
-        └──────────────────┬─────────────────┘
-                           │
-        ┌──────────────────▼─────────────────┐
-        │  Final Evaluation on Test Set      │
-        │  • Confusion Matrix                │
-        │  • Classification Report           │
-        │  • Feature Importances             │
-        │  • Model Comparison                │
-        └──────────────────┬─────────────────┘
-                           │
-        ┌──────────────────▼─────────────────┐
-        │  Save Artifacts                    │
-        │  • Model (fraud_model.pkl)         │
-        │  • Preprocessor (preprocessor)     │
-        │  • Threshold (best_threshold)      │
-        └────────────────────────────────────┘
-```
-
-##  Dataset
-
-### Overview
-- **Total Records**: 100,000 credit card transactions
-- **Fraudulent Cases**: 1,000 (1.00% of dataset)
-- **Legitimate Cases**: 99,000 (99.00%)
-- **Class Imbalance Ratio**: 99:1
-- **Test Set Size**: 30,000 transactions
-- **Training Set Size**: 70,000 transactions
-
-### Features
 | Feature | Type | Description |
-|---------|------|-------------|
+|---|---|---|
 | TransactionID | Numeric | Unique transaction identifier |
 | TransactionDate | Datetime | Date and time of transaction |
-| Amount | Numeric | Transaction amount in currency |
+| Amount | Numeric | Transaction amount |
 | MerchantID | Categorical | Merchant identifier |
-| TransactionType | Categorical | Type (purchase, refund, etc.) |
+| TransactionType | Categorical | Type of transaction |
 | Location | Categorical | Geographic location |
-| IsFraud | Binary | Target (0=Legitimate, 1=Fraud) |
+| IsFraud | Binary | Target (0 = legitimate, 1 = fraud) |
 
-### Derived Features 
+### Derived features
+
 | Feature | Source | Purpose |
-|---------|--------|---------|
-| Hour | TransactionDate | Time-of-day pattern detection |
-| DayOfWeek | TransactionDate | Weekly pattern detection |
-| Month | TransactionDate | Seasonal pattern detection |
-| Is_night | Hour | Night-time fraud tendency |
-| Is_weekend | DayOfWeek | Weekend fraud patterns |
-| Merchant_fraud_rate | Aggregation | Fraud history of merchant |
-| Merchant_tx_count | Aggregation | Transaction volume by merchant |
-| Merchant_avg_amount | Aggregation | Typical transaction amount |
-| Amount_vs_merchant_avg | Derived | Anomaly detection |
+|---|---|---|
+| Hour | TransactionDate | Time-of-day pattern |
+| DayOfWeek | TransactionDate | Weekly pattern |
+| Month | TransactionDate | Seasonal pattern |
+| Is_night | Hour | Night-time indicator |
+| Is_weekend | DayOfWeek | Weekend indicator |
+| Merchant_fraud_rate | Aggregation | Fraud history of the merchant |
+| Merchant_tx_count | Aggregation | Transaction volume of the merchant |
+| Merchant_avg_amount | Aggregation | Typical amount at the merchant |
+| Amount_vs_merchant_avg | Derived | Amount relative to the merchant's average |
 | TransactionType_encoded | Encoding | Categorical to numeric |
 | Location_encoded | Encoding | Categorical to numeric |
 
-## 📈 Visualizations
+### Exploratory plots
 
-### 1. Distribution of Transaction Classes
-![Class Distribution](src/visualization/Class_Distribution.png)
+Plots are in `src/visualization/`. The observations below describe the plots and are not statistical tests. With only 1,000 fraud cases, differences between individual hours or days may be noise.
 
-**Key Insight**: Extreme class imbalance visible on logarithmic scale
-- Legitimate transactions: ~10000 (99%)
-- Fraudulent transactions: 1000 (1%)
-- **Challenge**: Model must learn fraud patterns from rare examples
+- **Class distribution** (log scale): about 99,000 legitimate and 1,000 fraudulent transactions.
+- **Fraud rate by hour:** the plot shows higher rates around 1 AM, 6 PM, and 8 AM and lower rates around 1 PM and 5 PM.
+- **Fraud by day of week:** the plot shows the most fraud on Sunday and the least on Saturday.
+- **Amount distribution by class:** fraud and legitimate amounts have similar distributions, so amount alone separates the classes poorly.
 
-### 2. Fraud Rate by Hour of Day
-![Fraud Rate by Time](src/visualization/Fraud_Rate_by_time.png)
+![Class distribution](src/visualization/Class_Distribution.png)
+![Fraud rate by hour](src/visualization/Fraud_Rate_by_time.png)
+![Fraud by day](src/visualization/Fraud_Transcation_by_day.png)
+![Amount distribution](src/visualization/Trasncation_distribution_by_class.png)
 
-**Key Insights**:
-- Peak fraud hours: 1 AM , 6 PM , 8 AM 
-- Lowest fraud hours: 5 PM, 1 PM 
-- **Pattern**: Fraudsters active at night and during business hours transitions
-- **Application**: Time-of-day features in model input
+## Pipeline
 
-### 3. Fraudulent Transactions by Day of Week
-![Fraud by Day](src/visualization/Fraud_Transcation_by_day.png)
+1. Load `data/raw/credit_card_fraud_dataset.csv`.
+2. Parse dates, create time features, and encode `TransactionType` and `Location`.
+3. Build merchant statistics and the engineered amount feature.
+4. Split 70/30, stratified on `IsFraud` (`random_state=42`).
+5. Fit `RobustScaler` on the training set and apply it to both sets.
+6. Apply SMOTE to the training set only: fraud goes from 700 to 69,300 samples, matching the 69,300 legitimate ones. The test set keeps its natural 1% fraud rate.
+7. Train a logistic regression baseline (`class_weight='balanced'`, `max_iter=1000`).
+8. Train a random forest (200 trees, `max_depth=20`, `min_samples_split=10`, `min_samples_leaf=5`, `class_weight='balanced'`).
+9. Evaluate thresholds from 0.10 to 0.65 in steps of 0.05 (12 values) and select the highest F1 among thresholds with recall of at least 0.60.
+10. Report the confusion matrix, classification metrics, and model comparison, and save the model, preprocessor, and threshold.
 
-**Key Insights**:
-- Peak fraud day: Sunday
-- Lowest fraud day: Saturday
-- **Pattern**: End-of-week anomaly; weekend dip
-- **Application**: Day-of-week feature captures behavioral patterns
+Threshold search:
 
-### 4. Transaction Amount Distribution by Class
-![Amount Distribution](src/visualization/Trasncation_distribution_by_class.png)
-
-**Key Insights**:
-- Both fraud and legitimate show similar amount distributions
-- **Implication**: Amount alone is weak discriminator
-- **Solution**: Use contextual features (merchant history, time, location)
-
-## 📁 Project Structure
-
-```
-Credit_Card_Fraud_Detection_ML_Project/
-│
-├── 📂 src/
-│   ├── 📂 data/
-│   │   ├── preprocessing.py          # SimpleFraudPreprocessor class
-│   │   └── __init__.py
-│   │
-│   ├── 📂 features/
-│   │   ├── build_features.py         # FraudFeatureBuilder class
-│   │   └── __init__.py
-│   │
-│   ├── 📂 models/
-│   │   ├── train_model.py            # Training pipeline & evaluation
-│   │   ├── __init__.py
-│   │   └── predict.py                # (Optional) Inference script
-│   │
-│   ├── 📂 visualization/
-│   │   ├── 📂 images/
-│   │   │   ├── Class_Distribution.png
-│   │   │   ├── Fraud_Rate_by_time.png
-│   │   │   ├── Fraud_Transcation_by_day_.png
-│   │   │   └── Trasncation_distribution_by_class.png
-│   │   └── __init__.py
-│   │
-│   └── __init__.py
-│       └── (imports: from src.models.train_model import train_fraud_model)
-│
-├── 📂 configs/
-│   ├── config.yaml                   # Paths & data config
-│   └── model_params.yaml             # Hyperparameters
-│
-├── 📂 data/
-│   ├── raw/
-│   │   └── credit_card_fraud_dataset.csv
-│   └── processed/                    # (Generated during preprocessing)
-│
-├── 📂 models/
-│   ├── artifacts/
-│   │   └── preprocessor.joblib       # Saved encoders & scaler
-│   └── fraud_model.pkl               # Trained Random Forest model
-│
-├── 📂 reports/
-│   └── confusion_matrix.png          # Generated evaluation plot
-│
-├── 📂 notebooks/                     # (Optional) Jupyter exploratory work
-│   └── eda_credit_card_fraud.ipynb
-│
-├── main.py                           # Entry point orchestrator
-├── requirements.txt                  # Python dependencies
-├── pyproject.toml                    # Project metadata
-├── LICENSE                           # MIT License
-├── .gitignore                        # Git ignore patterns
-└── README.md                         # This file
+```python
+for threshold in np.arange(0.10, 0.70, 0.05):   # 0.10 ... 0.65
+    preds = (y_proba >= threshold).astype(int)
+    recall = TP / (TP + FN)
+    precision = TP / (TP + FP)
+    f1 = 2 * precision * recall / (precision + recall)
+    # keep the threshold with the highest F1 where recall >= min_recall
 ```
 
-##  Installation
+## Results
 
-### Step 1: Clone Repository
+All numbers are for the random forest on the 30,000-transaction test set (300 fraud, 29,700 legitimate).
+
+### Threshold search
+
+| Threshold | Recall | Precision | F1 | False alarms | Fraud caught | Recall >= 0.60 |
+|---|---|---|---|---|---|---|
+| 0.10 | 0.85 | 0.0170 | 0.0333 | 14,724 | 254 | Yes |
+| 0.15 | 0.77 | 0.0178 | 0.0347 | 12,768 | 231 | Yes |
+| 0.20 | 0.70 | 0.0186 | 0.0361 | 11,163 | 211 | Yes |
+| **0.25** | **0.62** | **0.0190** | **0.0368** | **9,674** | **187** | **Yes (selected)** |
+| 0.30 | 0.56 | 0.0192 | 0.0371 | 8,537 | 167 | No |
+| 0.35 | 0.50 | 0.0195 | 0.0375 | 7,554 | 150 | No |
+| 0.40 | 0.44 | 0.0194 | 0.0372 | 6,617 | 131 | No |
+| 0.45 | 0.40 | 0.0208 | 0.0395 | 5,709 | 121 | No |
+| 0.50 (default) | 0.37 | 0.0215 | 0.0407 | 4,997 | 110 | No |
+| 0.55 | 0.32 | 0.0212 | 0.0397 | 4,438 | 96 | No |
+| 0.60 | 0.30 | 0.0220 | 0.0411 | 4,039 | 91 | No |
+| 0.65 | 0.27 | 0.0215 | 0.0398 | 3,687 | 81 | No |
+
+F1 is low at every threshold because precision stays near 2%. Among thresholds that meet the 60% recall requirement, 0.25 has the highest F1.
+
+### Model comparison
+
+| Metric | Logistic regression | Random forest (threshold 0.25) |
+|---|---|---|
+| Accuracy | 0.67 | 0.67 |
+| Recall | 0.66 | 0.62 |
+| Precision | not recorded | 0.019 |
+| F1 | 0.04 | 0.04 |
+| ROC-AUC | 0.73 | 0.72 |
+
+The two models perform about the same, so the random forest adds complexity without a measurable gain on this dataset.
+
+### Confusion matrix (random forest, threshold 0.25)
+
+|  | Predicted legitimate | Predicted fraud |
+|---|---|---|
+| Actual legitimate | 20,026 | 9,674 |
+| Actual fraud | 113 | 187 |
+
+- Recall: 187 / 300 = 62.3%
+- Precision: 187 / 9,861 = 1.9%
+- False alarm rate: 9,674 / 29,700 = 32.6%
+- Accuracy: 20,213 / 30,000 = 67.4%
+
+![Confusion matrix](src/visualization/confusion_matrix.png)
+
+### Cost of lowering the threshold
+
+Moving from 0.50 to 0.25 caught 77 more frauds (110 to 187) and added 4,677 false alarms (4,997 to 9,674), about 60 extra false alarms per additional fraud caught.
+
+## Limitations
+
+- **Threshold chosen on the test set.** The threshold search and the final evaluation use the same test data, so the reported test numbers are optimistic. A validation split or cross-validation would fix this.
+- **Low precision.** At the selected threshold about 52 alerts are false for each real fraud. Alerts would need a review step before any action.
+- **Weak discrimination.** ROC-AUC is about 0.72, and the random forest does not beat the logistic regression baseline.
+- **Small number of fraud cases.** With 300 frauds in the test set, a recall of 62.3% has a 95% binomial interval of roughly plus or minus 5.5 percentage points. Results come from one split and one random seed.
+- **No ablations.** SMOTE, `RobustScaler`, and the engineered features were not tested against alternatives, so this README makes no claims about how much each one helps.
+- **Dataset.** The data is a public Kaggle dataset. Performance on real transaction data is unknown.
+
+## Installation
 
 ```bash
 git clone https://github.com/Ramesh-Bartaula/Credit_Card_Fraud_Detection_ML_Project.git
 cd Credit_Card_Fraud_Detection_ML_Project
-```
 
-### Step 2: Create Virtual Environment
-
-```bash
 # macOS/Linux
 python3 -m venv venv
 source venv/bin/activate
@@ -284,305 +189,96 @@ source venv/bin/activate
 # Windows
 python -m venv venv
 venv\Scripts\activate
-```
 
-### Step 3: Install Dependencies
-
-```bash
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### Step 4: Download Dataset
+### Download the dataset
 
-The project expects `credit_card_fraud_dataset.csv` in `data/raw/`:
+The project expects the file at `data/raw/credit_card_fraud_dataset.csv`.
 
-**Option A: Manual Download**
-1. Visit [Kaggle Credit Card Fraud Dataset](https://www.kaggle.com/datasets/bhadramohit/credit-card-fraud-detection/data)
-2. Download the CSV file
-3. Extract to `data/raw/credit_card_fraud_dataset.csv`
+**Manual:** download the CSV from the [Kaggle dataset page](https://www.kaggle.com/datasets/bhadramohit/credit-card-fraud-detection/data), then save it as `data/raw/credit_card_fraud_dataset.csv`.
 
-**Option B: Using Kaggle CLI** (if configured)
-```bash
-kaggle datasets download -d mlg-ulb/creditcardfraud
-unzip creditcardfraud.zip -d data/raw/
-```
-
-### Step 5: Verify Installation
+**Kaggle CLI** (if configured):
 
 ```bash
-# Check if all required packages are installed
-python -c "import pandas, sklearn, joblib, yaml; print('✓ All dependencies installed')"
+kaggle datasets download -d bhadramohit/credit-card-fraud-detection
+unzip credit-card-fraud-detection.zip -d data/raw/
 ```
 
-## ⚡ Quick Start
+Rename the extracted CSV to `credit_card_fraud_dataset.csv` if its name differs.
 
-### Run Complete Pipeline
+### Check the installation
+
+```bash
+python -c "import pandas, sklearn, imblearn, joblib, yaml; print('All dependencies installed')"
+```
+
+## Quick start
 
 ```bash
 python main.py
 ```
 
-**What happens:**
-1. Loads `data/raw/credit_card_fraud_dataset.csv`
-2. Preprocesses data (temporal features, encoding, scaling)
-3. Applies SMOTE to balance classes
-4. Trains Logistic Regression baseline
-5. Trains Random Forest model
-6. Tests 14 different thresholds (0.10 to 0.70)
-7. Selects best threshold maximizing F1 with ≥60% recall
-8. Generates confusion matrix visualization
-9. Saves model, preprocessor, and threshold
-10. Displays comprehensive comparison report
+The script loads the data, preprocesses it, applies SMOTE to the training set, trains both models, tests 12 thresholds, selects the best one under the 60% recall rule, and saves the model, preprocessor, and threshold. The console shows the dataset shape, class counts before and after SMOTE, the threshold table, and evaluation metrics for both models. Reference results are in [Results](#results).
 
-### Expected Output
+## Usage examples
 
-```
-============================================================
-  FRAUD DETECTION SYSTEM - PIPELINE STARTING
-============================================================
-
---- Loading Data ---
-Dataset shape: (284807, 7)
-Fraud cases: 492 / 284807 (0.17%)
-
---- Preprocessing ---
-[Processing features...]
-
---- Applying SMOTE to Training Data ---
-Before SMOTE — Normal: 69,300 | Fraud: 700
-After SMOTE  — Normal: 69,300 | Fraud: 69,300
-
---- Running Baseline Model ---
---- Threshold Tuning ---
-Threshold   | Recall   | Precision  | F1       | False Alarms | Fraud Caught
-...
-Best threshold: 0.30 | F1: 0.8543 | Min recall enforced: 0.60
-
---- Training Random Forest ---
-[Training...]
-
---- Evaluation ---
-... [detailed metrics]
-
-✅ PIPELINE COMPLETED SUCCESSFULLY!
-```
-
-##  Pipeline Workflow
-
-### Step 1: Data Loading (`train_model.py`)
-```python
-df = pd.read_csv(DATA_PATH)  # Load 284,807 transactions
-print(f"Fraud rate: {df['IsFraud'].mean()*100:.2f}%")  # 0.17%
-```
-
-### Step 2: Preprocessing (`SimpleFraudPreprocessor.prepare_features()`)
-```python
-prep = SimpleFraudPreprocessor()
-
-# Add temporal features
-data['Hour'] = TransactionDate.hour           # 0-23
-data['DayOfWeek'] = TransactionDate.dayofweek # 0-6 (Mon-Sun)
-data['Month'] = TransactionDate.month         # 1-12
-
-# Encode categoricals
-data['TransactionType_encoded'] = LabelEncoder.fit_transform(TransactionType)
-data['Location_encoded'] = LabelEncoder.fit_transform(Location)
-
-# Generate merchant stats & features
-builder.fit_merchant_stats(data)
-data['Merchant_fraud_rate'] = data['MerchantID'].map(merchant_fraud_rate_dict)
-```
-
-### Step 3: Train-Test Split (`SimpleFraudPreprocessor.split_data()`)
-```python
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, 
-    test_size=0.3,              # 70% train, 30% test
-    random_state=42,
-    stratify=y                  # Maintain fraud % in both sets
-)
-# Results: Train (199,364 samples), Test (85,443 samples)
-```
-
-### Step 4: Scaling (`SimpleFraudPreprocessor.scale_features()`)
-```python
-# Use RobustScaler — resistant to outliers
-scaler = RobustScaler()
-X_train_scaled = scaler.fit_transform(X_train)
-X_test_scaled = scaler.transform(X_test)
-```
-
-**Why RobustScaler over StandardScaler?**
-- StandardScaler uses mean & std → pulled by extreme values
-- RobustScaler uses median & IQR → immune to outliers
-- Critical for transaction amounts (can range $0-$30,000)
-
-### Step 5: SMOTE Resampling
-```
-Before SMOTE:
-  Normal: 69,300 samples
-  Fraud: 700 samples
-  (Imbalance ratio: 99:1)
-
-After SMOTE:
-  Normal: 69,300 samples
-  Fraud: 69,300 synthetic samples
-  (Balanced 50-50)
-```
-
-**Why SMOTE is critical:**
-- Without it: Model learns to always predict "Normal" → 99% accuracy but catches zero fraud
-- With it: Model forced to learn fraud patterns by seeing synthetic fraud examples
-
-### Step 6: Train Baseline Model
-```python
-baseline = LogisticRegression(class_weight='balanced', max_iter=1000)
-baseline.fit(X_train_res, y_train_res)
-```
-
-Used as sanity check to verify:
-- Features contain signal
-- Training process works
-- Random Forest should beat it
-
-### Step 7: Train Random Forest
-```python
-model = RandomForestClassifier(
-    n_estimators=200,           # 200 decision trees
-    max_depth=20,               # Each tree max 20 levels
-    min_samples_split=10,       # Need 10 samples to split
-    min_samples_leaf=5,         # Leaf nodes need ≥5 samples
-    class_weight='balanced',    # Account for imbalance even after SMOTE
-    random_state=42,
-    n_jobs=-1                   # Use all CPU cores
-)
-model.fit(X_train_res, y_train_res)
-```
-
-### Step 8: Threshold Optimization
-```python
-def find_best_threshold(model, X_test_scaled, y_test, min_recall=0.60):
-    """
-    Default threshold = 0.5 fails on imbalanced data
-    
-    Strategy: Test thresholds 0.10 to 0.70
-    Find best threshold that:
-    1. Maximizes F1 score
-    2. Maintains recall >= 60% (catch 60% of fraud)
-    """
-    
-    y_proba = model.predict_proba(X_test_scaled)[:, 1]  # Fraud probabilities
-    
-    for threshold in np.arange(0.10, 0.70, 0.05):
-        preds = (y_proba >= threshold).astype(int)
-        
-        recall = TP / (TP + FN)          # % of fraud caught
-        precision = TP / (TP + FP)       # % of alerts that are fraud
-        f1 = 2 * (precision * recall) / (precision + recall)
-        
-        # Select threshold with best F1 AND recall >= 60%
-```
-
-**Example Output:**
-```
-Threshold   | Recall   | Precision  | F1       | False Alarms | Fraud Caught
-0.10        | 0.85     | 0.0170     | 0.0333   | 14,724       | 254
-0.20        | 0.70     | 0.0186     | 0.0361   | 11,163       | 211
-0.25        | 0.62     | 0.0190     | 0.0368   | 9,674        | 187  <-- BEST 
-0.50        | 0.37     | 0.0215     | 0.0407   | 4,997        | 110
-```
-
-At **threshold 0.25**: Catch 187 fraud cases with 9,674 false alarms
-At **threshold 0.50**: Catch only 110 fraud cases with 4,997 false alarms ← Default, suboptimal
-
-### Step 9: Final Evaluation
+### Programmatic training
 
 ```python
-rf_pred = (rf_proba >= best_threshold).astype(int)
+from src.models.train_model import train_fraud_model
 
-# Metrics
-accuracy = (TP + TN) / (TP + TN + FP + FN)      # Overall correctness
-recall = TP / (TP + FN)                         # % fraud caught
-precision = TP / (TP + FP)                      # % alerts that are fraud
-f1 = 2 * (precision * recall) / (precision + recall)
-auc = roc_auc_score(y_test, rf_proba)           # Curve under ROC
+train_fraud_model()
 ```
 
-### Step 10: Save Artifacts
+### Load and predict
+
+New transactions must go through the same preprocessing (encoders, merchant statistics, scaler) before prediction.
 
 ```python
-# Save trained model
-joblib.dump(model, 'models/fraud_model.pkl')
+import joblib
 
-# Save preprocessor (encoders, scaler, feature builder)
-joblib.dump(preprocessor_artifacts, 'models/artifacts/preprocessor.joblib')
+model = joblib.load('models/fraud_model.pkl')
+preprocessor_data = joblib.load('models/artifacts/preprocessor.joblib')
+best_threshold = joblib.load('models/artifacts/best_threshold.joblib')
 
-# Save best threshold for inference
-joblib.dump(best_threshold, 'models/artifacts/best_threshold.joblib')
+# new_transaction_prepared: output of the saved preprocessing steps
+proba = model.predict_proba(new_transaction_prepared)[:, 1]
+prediction = (proba >= best_threshold).astype(int)
 ```
 
-##  Model Performance
+### Compare thresholds
 
-### Actual Results from Execution
+```python
+thresholds = {
+    'aggressive': 0.15,    # recall 0.77
+    'selected': 0.25,      # recall 0.62
+    'conservative': 0.40,  # recall 0.44
+    'default': 0.50,       # recall 0.37
+}
 
-#### Threshold Tuning Output
-The model tested thresholds from 0.10 to 0.65 to maximize F1 score while maintaining minimum recall of 60%:
-
-```
-Threshold  | Recall  | Precision | F1      | False Alarms | Fraud Caught
-───────────────────────────────────────────────────────────────────────
-0.10       | 0.85    | 0.0170    | 0.0333  | 14,724       | 254  <-- best
-0.15       | 0.77    | 0.0178    | 0.0347  | 12,768       | 231  <-- best
-0.20       | 0.70    | 0.0186    | 0.0361  | 11,163       | 211  <-- best
-0.25       | 0.62    | 0.0190    | 0.0368  | 9,674        | 187  <-- best -----> SELECTED
-0.30       | 0.56    | 0.0192    | 0.0371  | 8,537        | 167  (recall too low)
-0.35       | 0.50    | 0.0195    | 0.0375  | 7,554        | 150  (recall too low)
-0.40       | 0.44    | 0.0194    | 0.0372  | 6,617        | 131  (recall too low)
-0.45       | 0.40    | 0.0208    | 0.0395  | 5,709        | 121  (recall too low)
-0.50       | 0.37    | 0.0215    | 0.0407  | 4,997        | 110  (recall too low)
-0.55       | 0.32    | 0.0212    | 0.0397  | 4,438        | 96   (recall too low)
-0.60       | 0.30    | 0.0220    | 0.0411  | 4,039        | 91   (recall too low)
-0.65       | 0.27    | 0.0227    | 0.0419  | 3,687        | 81   (recall too low)
+for name, t in thresholds.items():
+    pred = (proba >= t).astype(int)
+    fraud_caught = ((pred == 1) & (y_true == 1)).sum()
+    false_alarms = ((pred == 1) & (y_true == 0)).sum()
+    print(f"{name:12} | threshold {t:.2f} | fraud caught {fraud_caught} | false alarms {false_alarms}")
 ```
 
-**Best Threshold Selected: 0.25** with F1 Score: 0.0368
-
-### Model Comparison: Baseline (LR) vs. Random Forest
-
-| Metric | Baseline (LR) | Random Forest |
-|--------|---------------|---------------|
-| **Accuracy** | 0.67 | 0.67 |
-| **Recall** | 0.66 | 0.62 |
-| **Precision** | Variable | Variable |
-| **F1 Score** | 0.04 | 0.04 |
-| **ROC-AUC** | 0.73 | 0.72 |
-
-### Confusion Matrix (Random Forest at Threshold 0.25)
+On the test set this gives:
 
 ```
-                 Predicted Normal    Predicted Fraud
-Actual Normal         20,026              9,674
-Actual Fraud            113                187
+aggressive   | threshold 0.15 | fraud caught 231 | false alarms 12768
+selected     | threshold 0.25 | fraud caught 187 | false alarms 9674
+conservative | threshold 0.40 | fraud caught 131 | false alarms 6617
+default      | threshold 0.50 | fraud caught 110 | false alarms 4997
 ```
 
-**Performance Breakdown:**
-- **True Negatives (20,026)**: Normal transactions correctly identified 
-- **False Positives (9,674)**: Normal flagged as fraud (false alarms) 
-- **False Negatives (113)**: Fraud missed 
-- **True Positives (187)**: Fraud correctly caught 
+## Configuration
 
-**Key Metrics:**
-- **Fraud Detection Rate**: 187 / 300 = **62.3%** ← catches about 62% of fraud
-- **False Alarm Rate**: 9,674 / 29,700 = **32.57%** ← high false alarms
-- **Precision**: 187 / 9,861 = **1.9%** ← most alerts are false
-- **Recall**: 187 / 300 = **62.3%** ← meets minimum 60% requirement
+`configs/config.yaml`
 
-![Confusion Matrix](src/visualization/confusion_matrix.png)
-
-## ⚙️ Configuration
-
-### `configs/config.yaml`
 ```yaml
 paths:
   raw_data: 'data/raw/credit_card_fraud_dataset.csv'
@@ -590,260 +286,88 @@ paths:
   model_path: 'models/fraud_model.pkl'
 
 preprocessing:
-  test_size: 0.3              # 70% train, 30% test
-  random_state: 42            # Reproducibility
-  scale_columns:              # Features to scale
+  test_size: 0.3
+  random_state: 42
+  scale_columns:
     - Amount
     - Merchant_avg_amount
     - Amount_vs_merchant_avg
 ```
 
-### `configs/model_params.yaml`
+`configs/model_params.yaml`
+
 ```yaml
 model_params:
-  n_estimators: 200           # Number of trees
-  max_depth: 20               # Max tree depth
-  min_samples_split: 10       # Min samples to split node
-  min_samples_leaf: 5         # Min samples at leaf
-  max_features: 'sqrt'        # Features per split
-  class_weight: 'balanced'    # Handle imbalance
-  random_state: 42            # Reproducibility
-  n_jobs: -1                  # Use all CPU cores
+  n_estimators: 200
+  max_depth: 20
+  min_samples_split: 10
+  min_samples_leaf: 5
+  max_features: 'sqrt'
+  class_weight: 'balanced'
+  random_state: 42
+  n_jobs: -1
 
 threshold_tuning:
-  min_recall: 0.60            # Catch ≥60% of fraud
+  min_recall: 0.60
   threshold_range:
     start: 0.10
-    end: 0.70
+    end: 0.70      # exclusive, so the last threshold tested is 0.65
     step: 0.05
 ```
 
-##  Usage Examples
-
-### Example 1: Basic Training
-
-```bash
-python main.py
-```
-
-### Example 2: Programmatic Training
-
-```python
-from src.models.train_model import train_fraud_model
-
-# Run complete pipeline
-train_fraud_model()
-```
-
-### Example 3: Load and Predict
-
-```python
-import joblib
-import pandas as pd
-from pathlib import Path
-
-# Load trained model
-model = joblib.load('models/fraud_model.pkl')
-preprocessor_data = joblib.load('models/artifacts/preprocessor.joblib')
-best_threshold = joblib.load('models/artifacts/best_threshold.joblib')
-
-# Prepare new transaction
-new_transaction = pd.read_csv('new_transaction.csv')
-
-# Note: Would need to preprocess using the same 
-# encoder/scaler from preprocessor_data
-
-# Predict
-proba = model.predict_proba(new_transaction_prepared)[:, 1]
-prediction = (proba >= best_threshold).astype(int)
-
-print(f"Fraud probability: {proba[0]:.2%}")
-print(f"Prediction: {'FRAUD ' if prediction[0] else 'NORMAL ✓'}")
-```
-
-### Example 4: Custom Threshold
-
-```python
-import numpy as np
-
-# Use different threshold for different risk tolerance
-thresholds = {
-    'aggressive': 0.15,    # Catch more fraud, many false alarms (77% recall)
-    'balanced': 0.25,      # Current best (from tuning) - 62% recall
-    'conservative': 0.40,  # Fewer false alarms, miss more fraud (44% recall)
-    'strict': 0.50         # Default threshold, very few alerts (37% recall)
-}
-
-for name, threshold in thresholds.items():
-    pred = (proba >= threshold).astype(int)
-    fraud_caught = pred.sum()
-    false_alarms = ((pred == 1) & (y_true == 0)).sum()
-    print(f"{name:12} | Threshold: {threshold:.2f} | "
-          f"Fraud caught: {fraud_caught} | False alarms: {false_alarms}")
-```
-
-**Output:**
-```
-aggressive   | Threshold: 0.15 | Fraud caught: 231  | False alarms: 12,768
-balanced     | Threshold: 0.25 | Fraud caught: 187  | False alarms: 9,674 ← SELECTED
-conservative | Threshold: 0.40 | Fraud caught: 131  | False alarms: 6,617
-strict       | Threshold: 0.50 | Fraud caught: 110  | False alarms: 4,997
-```
-
-##  Technical Details
-
-### Why RobustScaler?
-
-**StandardScaler (Mean & Std):**
-```python
-scaled = (x - mean) / std
-
-# Problem: One extreme value affects both mean AND std
-# Example: [100, 101, 102, 1000000]
-# Mean = 250,075 (pulled by outlier)
-# Std = 433,000 (wildly inflated)
-```
-
-**RobustScaler (Median & IQR):**
-```python
-scaled = (x - median) / IQR
-
-# Solution: Outliers have NO effect on median or IQR
-# Example: [100, 101, 102, 1000000]
-# Median = 101.5 (unaffected)
-# IQR = 1 (unaffected)
-```
-
-### Why SMOTE?
-
-**Without SMOTE:**
-```
-Training data:
-Normal: 69,300 examples
-Fraud: 700 examples (1%)
-
-Model learns:
-"Always predict Normal"
-→ 99% accuracy
-→ Catches 0% of fraud 
-```
-
-**With SMOTE:**
-```
-Training data (after oversampling):
-Normal: 69,300 examples
-Fraud: 69,300 synthetic examples (50%)
-
-Model learns:
-"Need to distinguish fraud from normal"
-→ Still 99% accuracy on test set (true distribution)
-→ Catches 85% of fraud ✓
-```
-
-### Why Threshold Tuning?
-
-**Default Threshold (0.5):**
-```
-"Predict fraud if model is ≥50% confident"
-
-Problem on imbalanced data:
-- Model naturally assigns low probabilities to fraud
-  (because it's rare in training)
-- At threshold 0.5, almost nothing qualifies
-- Catches ~15% of fraud
-```
-
-** Optimized Threshold (0.30):**
-```
-"Predict fraud if model is ≥30% confident"
-
-Benefits:
-- Catches 85% of fraud
-- False alarm rate: 3.3% (acceptable)
-- Dynamic: Automatically found by algorithm
-- Guaranteed minimum recall: 60%
-```
-
-##  Contributing
-
-### Development Workflow
-
-1. **Create feature branch**
-   ```bash
-   git checkout -b feature/your-feature
-   ```
-
-2. **Make changes following conventions**
-   - Update relevant files (preprocessing.py, build_features.py, train_model.py)
-   - Add docstrings to new functions
-   - Test thoroughly
-
-3. **Test your changes**
-   ```bash
-   python main.py  # Run full pipeline
-   ```
-
-4. **Commit with clear messages**
-   ```bash
-   git commit -m "Add feature: [description]"
-   ```
-
-5. **Push and create Pull Request**
-   ```bash
-   git push origin feature/your-feature
-   ```
-
-##  License
-
-MIT License - see [LICENSE](LICENSE) file
+## Project structure
 
 ```
-MIT License
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction...
+Credit_Card_Fraud_Detection_ML_Project/
+├── configs/
+│   ├── config.yaml
+│   └── model_params.yaml
+├── data/
+│   └── raw/                      # credit_card_fraud_dataset.csv goes here
+├── docs/
+├── models/
+│   └── artifacts/                # preprocessor and threshold
+├── notebooks/
+├── reports/
+│   └── figures/
+├── src/
+│   ├── data/preprocessing.py     # SimpleFraudPreprocessor
+│   ├── features/build_features.py  # FraudFeatureBuilder
+│   ├── models/train_model.py     # training and evaluation
+│   └── visualization/            # exploratory plots
+├── main.py                       # entry point
+├── requirements.txt
+├── pyproject.toml
+├── LICENSE
+└── README.md
 ```
 
-##  Author
+## Technical notes
 
-**Ramesh Bartaula and Niraj K Mali**
+**RobustScaler.** It centers on the median and scales by the interquartile range, so extreme values have little influence. `StandardScaler` uses the mean and standard deviation, which a single extreme value can distort. Example with one extreme value in eight: `[100, 101, 102, 103, 104, 105, 106, 1000000]` has a mean of about 125,090 and a standard deviation of about 330,685, while the median is 103.5 and the IQR is 3.5. This project did not compare the two scalers on model performance.
+
+**SMOTE.** It creates synthetic minority-class samples by interpolating between existing fraud examples. It is applied to the training set only, so the test set keeps the real 1% fraud rate. This project did not run a model without SMOTE, so its effect on results is untested.
+
+**Threshold tuning.** A model trained on balanced data outputs probabilities that do not match real-world fraud frequency, so a 0.50 cutoff is not special. Here the cutoff is treated as a setting and chosen by F1 subject to a minimum recall of 60%. See [Limitations](#limitations) for the caveat about tuning on the test set.
+
+**Accuracy.** Accuracy is misleading on imbalanced data. At threshold 0.25 accuracy is 67% while precision is 1.9%, so recall and precision should be read together.
+
+## License
+
+MIT License. See [LICENSE](LICENSE).
+
+## Authors
+
+Ramesh Bartaula and Niraj K Mali
+
 - GitHub: [@Ramesh-Bartaula](https://github.com/Ramesh-Bartaula)
-- Project: [Credit Card Fraud Detection ML](https://github.com/Ramesh-Bartaula/Credit_Card_Fraud_Detection_ML_Project)
+- Email: basantimaya12@gmail.com or nirajmali247@gmail.com
 
-##  References
+Last updated: October 2026
 
-### Key Techniques Used
-- **SMOTE**: [Imbalanced-learn Documentation](https://imbalanced-learn.org/stable/references/generated/imblearn.over_sampling.SMOTE.html)
-- **RobustScaler**: [Scikit-learn RobustScaler](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.RobustScaler.html)
-- **Random Forest**: [Scikit-learn RandomForestClassifier](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html)
+## References
 
-### Related Research
-- [Imbalanced Learning: Foundations, Algorithms, and Applications](https://imbalanced-learning.org/)
-- [Handling Imbalanced Datasets in Machine Learning](https://arxiv.org/abs/1609.00626)
-- [Credit Card Fraud Detection Review](https://www.sciencedirect.com/)
-
-## 📞 Support
-
-- **GitHub Issues**: [Report bugs](https://github.com/Ramesh-Bartaula/Credit_Card_Fraud_Detection_ML_Project/issues)
-- **Questions**: Open discussion in GitHub Discussions
-- **Email**: [basantimaya12@gmail.com] OR [nirajmali247@gmail.com]
-
----
-
-##  Key Takeaways
-
-1. **Class imbalance is critical** - SMOTE solved the "always predict normal" problem
-2. **Default threshold is wrong** - 0.5 is for balanced data; optimal threshold was 0.25
-3. **RobustScaler beats StandardScaler** - When you have outliers in transaction amounts
-4. **Location & TransactionType matter most** - Top 2 features (5.12% & 4.87% importance)
-5. **Threshold tuning preserves recall** - Guaranteed catching 62%+ of fraud while respecting min recall
-6. **High false alarm rate is acceptable** - 32.57% false alarms with 62.3% fraud catch is business-viable
-7. **F1 score on imbalanced data is misleading** - Use recall + precision separately, not accuracy
-8. **Random Forest matched baseline** - Both achieved similar performance; simpler model would suffice
-9. **Feature engineering matters** - Even simple temporal features (hour, day) improve detection
-10. **Test on real distribution** - Never apply SMOTE to test set; evaluate on true 1% fraud rate
-
-**Last Updated**: May 2026  
-**Status**: Production Ready  
-
+- Chawla, N. V., Bowyer, K. W., Hall, L. O., and Kegelmeyer, W. P. (2002). SMOTE: Synthetic Minority Over-sampling Technique. *Journal of Artificial Intelligence Research*, 16, 321-357.
+- [imbalanced-learn: SMOTE](https://imbalanced-learn.org/stable/references/generated/imblearn.over_sampling.SMOTE.html)
+- [scikit-learn: RobustScaler](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.RobustScaler.html)
+- [scikit-learn: RandomForestClassifier](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html)
